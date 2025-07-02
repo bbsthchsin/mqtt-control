@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>控制 ESP32</title>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+  <h1>控制 ESP32</h1>
+  <button onclick="sendCommand('A1')">開啟</button>
+  <button onclick="sendCommand('A0')">關閉</button>
+
+  <script>
+    const options = {
+      clean: true,
+      connectTimeout: 4000,
+      clientId: 'webClient_' + Math.random().toString(16).substr(2, 8),
+      username: '你的MQTT帳號',
+      password: '你的MQTT密碼',
+    }
+
+    const connectUrl = 'wss://xxx.s1.eu.hivemq.cloud:8884/mqtt'; // 填入 HiveMQ 的 WebSocket 連線網址
+
+    const client = mqtt.connect(connectUrl, options);
+
+    client.on('connect', () => {
+      console.log('已連線至 MQTT Broker');
+    });
+
+    function sendCommand(cmd) {
+      client.publish('myTopic/command', cmd);
+      alert("已送出: " + cmd);
+    }
+  </script>
+</body>
+</html>
