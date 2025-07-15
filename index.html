@@ -3,46 +3,56 @@
 <head>
   <meta charset="utf-8">
   <title>ESP32 控制面板</title>
+
+  <!-- ✅ 載入 Paho MQTT 函式庫 -->
   <script src="https://cdn.jsdelivr.net/gh/eclipse/paho.mqtt.javascript@1.1.0/mqttws31.min.js"></script>
 </head>
 <body>
-  <h2>ESP32 控制面板3</h2>
-  <button onclick="sendCommand('A1')">送_出 A1（啟動）</button>
+  <h2>ESP32 控制面板</h2>
+  <button onclick="sendCommand('A1')">送出 A1（啟動）</button>
   <button onclick="sendCommand('A0')">送出 A0（停止）</button>
   <p id="status">狀態：尚未連線</p>
 
+  <!-- ✅ 等整個網頁載入後才執行程式碼 -->
   <script>
-    const username = "bst_bill";
-    const key = "aio_folg43X71bNEaJmNgESIQ3WBny80";
-    const topic = username + "/feeds/esp32-control";
-    const clientId = "webClient-" + Math.random().toString(16).substr(2, 8);
+    window.addEventListener('load', function () {
+      const username = "bst_bill";
+      const key = "aio_folg43X71bNEaJmNgESIQ3WBny80";
+      const topic = username + "/feeds/esp32-control";
+      const clientId = "webClient-" + Math.random().toString(16).substr(2, 8);
 
-    // ✅ 建立 MQTT 客戶端
-    const client = new Paho.MQTT.Client("io.adafruit.com", 443, "/mqtt", clientId);
-
-    // ✅ 連線設定
-    client.connect({
-      useSSL: true,
-      userName: username,
-      password: key,
-      onSuccess: () => {
-        document.getElementById("status").innerText = "狀態：已連線 ✅";
-        console.log("✅ 連線成功");
-      },
-      onFailure: (e) => {
-        document.getElementById("status").innerText = "狀態：連線失敗 ❌";
-        console.error("連線失敗", e);
+      if (typeof Paho === "undefined") {
+        document.getElementById("status").innerText = "❌ Paho 函式庫載入失敗";
+        console.error("❌ Paho is not defined");
+        return;
       }
-    });
 
-    // ✅ 發送指令
-    function sendCommand(cmd) {
-      const message = new Paho.MQTT.Message(cmd);
-      message.destinationName = topic;
-      client.send(message);
-      alert("✅ 已送出指令: " + cmd);
-    }
+      const client = new Paho.MQTT.Client("io.adafruit.com", 443, "/mqtt", clientId);
+
+      client.connect({
+        useSSL: true,
+        userName: username,
+        password: key,
+        onSuccess: () => {
+          document.getElementById("status").innerText = "狀態：已連線 ✅";
+          console.log("✅ 連線成功");
+        },
+        onFailure: (e) => {
+          document.getElementById("status").innerText = "狀態：連線失敗 ❌";
+          console.error("連線失敗", e);
+        }
+      });
+
+      // 設定為全域函數供按鈕使用
+      window.sendCommand = function (cmd) {
+        const message = new Paho.MQTT.Message(cmd);
+        message.destinationName = topic;
+        client.send(message);
+        alert("✅ 已送出指令: " + cmd);
+      };
+    });
   </script>
 </body>
 </html>
+
 
