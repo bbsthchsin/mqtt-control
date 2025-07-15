@@ -3,22 +3,27 @@
 <head>
   <meta charset="utf-8">
   <title>ESP32 控制面板</title>
+
+  <!-- 載入 Paho MQTT JavaScript 函式庫 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/mqttws31.min.js"></script>
+
 </head>
 <body>
-  <h2>ESP32 控制面板2</h2>
-  <button onclick="sendCommand('A1')">送出2 A1（啟動）</button>
-  <button onclick="sendCommand('A0')">送出2 A0（停止）</button>
+  <h2>ESP32 控制面板</h2>
+  <button onclick="sendCommand('A1')">送_出 A1（啟動）</button>
+  <button onclick="sendCommand('A0')">送_出 A0（停止）</button>
   <p id="status">狀態：尚未連線</p>
 
   <script>
     const username = "bst_bill";
     const key = "aio_folg43X71bNEaJmNgESIQ3WBny80";
     const topic = username + "/feeds/esp32-control";
-
     const clientId = "webClient-" + Math.random().toString(16).substr(2, 8);
+
+    //建立 MQTT 客戶端
     const client = new Paho.MQTT.Client("io.adafruit.com", 443, "/mqtt", clientId);
 
+    //連線設定
     client.connect({
       useSSL: true,
       userName: username,
@@ -33,6 +38,7 @@
       }
     });
 
+    //發送 MQTT 訊息
     function sendCommand(cmd) {
       const message = new Paho.MQTT.Message(cmd);
       message.destinationName = topic;
