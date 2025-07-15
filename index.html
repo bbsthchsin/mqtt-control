@@ -4,56 +4,47 @@
   <meta charset="utf-8">
   <title>ESP32 控制面板</title>
 
-  <!-- 主 CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/mqttws31.min.js" defer></script>
-  <!-- 備用 CDN -->
-  <script src="https://unpkg.com/paho-mqtt@1.1.0/paho-mqtt-min.js" defer></script>
+  <!-- ✅ 使用 UNPKG 正確載入 Paho 函式庫 -->
+  <script src="https://unpkg.com/paho-mqtt/mqttws31.min.js"></script>
 </head>
 <body>
   <h2>ESP32 控制面板</h2>
-  <button onclick="sendCommand('A1')">送_出 A1（啟動）</button>
+  <button onclick="sendCommand('A1')">送出 A1（啟動）</button>
   <button onclick="sendCommand('A0')">送出 A0（停止）</button>
   <p id="status">狀態：尚未連線</p>
 
   <script>
-    window.addEventListener('load', function () {
-      const username = "bst_bill";
-      const key = "aio_folg43X71bNEaJmNgESIQ3WBny80";
-      const topic = username + "/feeds/esp32-control";
-      const clientId = "webClient-" + Math.random().toString(16).substr(2, 8);
+    const username = "bst_bill";
+    const key = "aio_folg43X71bNEaJmNgESIQ3WBny80";
+    const topic = username + "/feeds/esp32-control";
+    const clientId = "webClient-" + Math.random().toString(16).substr(2, 8);
 
-      // 若 Paho 沒定義，顯示錯誤
-      if (typeof Paho === "undefined") {
-        document.getElementById("status").innerText = "❌ 錯誤：Paho MQTT 函式庫載入失敗";
-        console.error("Paho is not defined");
-        return;
+    // ✅ 建立 MQTT 客戶端
+    const client = new Paho.MQTT.Client("io.adafruit.com", 443, "/mqtt", clientId);
+
+    // ✅ 連線設定
+    client.connect({
+      useSSL: true,
+      userName: username,
+      password: key,
+      onSuccess: () => {
+        document.getElementById("status").innerText = "狀態：已連線 ✅";
+        console.log("✅ 連線成功");
+      },
+      onFailure: (e) => {
+        document.getElementById("status").innerText = "狀態：連線失敗 ❌";
+        console.error("連線失敗", e);
       }
-
-      const client = new Paho.MQTT.Client("io.adafruit.com", 443, "/mqtt", clientId);
-
-      client.connect({
-        useSSL: true,
-        userName: username,
-        password: key,
-        onSuccess: () => {
-          document.getElementById("status").innerText = "狀態：已連線 ✅";
-          console.log("✅ 連線成功");
-        },
-        onFailure: (e) => {
-          document.getElementById("status").innerText = "狀態：連線失敗 ❌";
-          console.error("連線失敗", e);
-        }
-      });
-
-      function sendCommand(cmd) {
-        const message = new Paho.MQTT.Message(cmd);
-        message.destinationName = topic;
-        client.send(message);
-        alert("✅ 已送出指令: " + cmd);
-      }
-
-      window.sendCommand = sendCommand;
     });
+
+    // ✅ 發送指令
+    function sendCommand(cmd) {
+      const message = new Paho.MQTT.Message(cmd);
+      message.destinationName = topic;
+      client.send(message);
+      alert("✅ 已送出指令: " + cmd);
+    }
   </script>
 </body>
 </html>
+
