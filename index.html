@@ -3,12 +3,10 @@ c<!DOCTYPE html>
 <head>
   <meta charset="utf-8">
   <title>ESP32 控制面板</title>
-
-  <!-- ✅ 載入 Paho MQTT 函式庫 -->
-  <script src="https://cdn.jsdelivr.net/gh/eclipse/paho.mqtt.javascript@1.1.0/mqttws31.min.js"></script>
+  <script src="mqttws31.min.js"></script>
 </head>
 <body>
-  <h2>ESP32 控制面板5</h2>
+  <h2>ESP32 控制面板6</h2>
   <button onclick="sendCommand('A1')">送出 A1（啟動）</button>
   <button onclick="sendCommand('A0')">送出 A0（停止）</button>
   <p id="status">狀態：尚未連線</p>
