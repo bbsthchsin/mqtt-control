@@ -8,7 +8,7 @@
   <script src="mqttws31.min.js"></script>
 </head>
 <body>
-  <h2>ESP32 控制面板5</h2>
+  <h2>ESP32 控制面板6</h2>
   <button onclick="sendCommand('A1')">送_出 A1（啟動）</button>
   <button onclick="sendCommand('A0')">送出 A0（停止）</button>
   <p id="status">狀態：尚未連線</p>
@@ -16,7 +16,7 @@
   <script>
     window.addEventListener('load', function () {
       const username = "bst_bill";
-      const key = "aio_mhkO42EJbfqBeLlfwKV6GdhxrufM";
+      const key = "aio_mhkO42EJbfqBeLlfwKV6GdhxrufM";      
       const topic = username + "/feeds/esp32-control";
       const clientId = "webClient-" + Math.random().toString(16).substr(2, 8);
 
